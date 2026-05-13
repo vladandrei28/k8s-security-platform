@@ -19,17 +19,24 @@ spec:
         image: security-webhook:dev
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8000
+        - containerPort: 8443
+          name: https
+        volumeMounts:
+        - name: tls
+          mountPath: /etc/webhook/tls
+          readOnly: true
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8000
+            port: 8443
+            scheme: HTTPS
           initialDelaySeconds: 5
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /healthz
-            port: 8000
+            port: 8443
+            scheme: HTTPS
           initialDelaySeconds: 2
           periodSeconds: 5
         resources:
@@ -39,3 +46,7 @@ spec:
           limits:
             cpu: 200m
             memory: 256Mi
+      volumes:
+      - name: tls
+        secret:
+          secretName: security-webhook-tls
