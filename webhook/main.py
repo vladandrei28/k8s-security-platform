@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
 
+from policies import evaluate_policies
+
 
 app = FastAPI(title="K8s Security Webhook")
 
@@ -47,15 +49,14 @@ def healthz():
 
 @app.post("/validate", response_model=AdmissionReviewResponse)
 def validate(review: AdmissionReviewRequest):
-    """
-    Validates a Kubernetes admission request.
-    Stub: always allow. Real policies come next.
-    """
+    """Validates a Kubernetes admission request against all active policies."""
     req = review.request
+    result = evaluate_policies(req.object)
+
     return AdmissionReviewResponse(
         response=AdmissionResponse(
             uid=req.uid,
-            allowed=True,
-            status={"message": "policy stub: always allow"},
+            allowed=result.allowed,
+            status={"message": result.reason or "All policies passed"},
         )
     )
