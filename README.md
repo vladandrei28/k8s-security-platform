@@ -110,6 +110,7 @@ Tests cover all six policies and the orchestrator (~30 cases, ~99% line coverage
 The CI pipeline (GitHub Actions) runs tests and builds the Docker image on every push and pull request.
 
 ## Project structure
+```
 .
 ├── webhook/                        # Webhook service
 │   ├── main.py                     # FastAPI app + admission protocol
@@ -127,4 +128,5 @@ The CI pipeline (GitHub Actions) runs tests and builds the Docker image on every
 │   └── gen-certs.sh
 ├── .github/workflows/ci.yml        # CI pipeline
 └── README.md
+```
 
