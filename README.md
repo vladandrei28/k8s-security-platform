@@ -34,11 +34,9 @@ flowchart LR
     Sched --> Pod[Pod running]
 ```
 
-The webhook serves HTTPS using a self-signed CA. The CA bundle is registered with `ValidatingWebhookConfiguration` so the API server trusts it. Enforcement is scoped via `namespaceSelector` to namespaces labeled `security-policy=enforce`, so cluster infrastructure (including the webhook itself) is not affected by the policy and cannot be locked out by misconfiguration.
+The webhook serves HTTPS using a self-signed CA. The CA bundle is registered with `ValidatingWebhookConfiguration` so the API server trusts it. Enforcement is scoped via `namespaceSelector` to namespaces labeled `security-policy=enforce`, so cluster infrastructure is not affected by the policy and cannot be locked out by misconfiguration.
 
-# Quickstart (local development)
-
-Prerequisites: Docker, kubectl, k3d, Python 3.11+, openssl.
+# Quickstart 
 
 ```bash
 # 1. Create local cluster
@@ -71,8 +69,6 @@ kubectl label namespace policy-test security-policy=enforce
 [![Demo video](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/fksCC_ic_Sc)
 
 # Development
-
-Run unit tests with coverage:
 
 ```bash
 cd webhook
