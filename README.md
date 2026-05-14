@@ -1,14 +1,13 @@
 # Kubernetes Cloud-Native Security Platform
 
-[![CI](https://github.com/vladandrei28/k8s-security-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/vladandrei28/k8s-security-platform/actions/workflows/ci.yml)
 
-A Python-based **Kubernetes Validating Admission Webhook** that enforces baseline pod security policies at the API server level. Pods violating policies are rejected before scheduling, with clear error messages identifying the policy that fired.
+A Python-based Kubernetes Validating Admission Webhook that enforces baseline pod security policies at the API server level. Pods violating policies are rejected before scheduling, with clear error messages identifying the policy that fired.
 
-> Built as a hands-on study in cloud-native security and Kubernetes internals. Production-grade structure with self-signed TLS, namespace-scoped enforcement, unit tests, and CI/CD.
+Built as a hands-on study in cloud-native security and Kubernetes internals. Production-grade structure with self-signed TLS, namespace-scoped enforcement, unit tests, and CI/CD.
 
-## What it does
+# What it does
 
-When a developer or CI pipeline runs `kubectl apply` for a Pod, the Kubernetes API server intercepts the request and asks this webhook whether the Pod should be admitted. The webhook evaluates the Pod spec against a registry of security policies and returns an allow/deny decision. Denied Pods never exist — they're rejected at admission with a structured error message naming the failed policy.
+When a developer or CI pipeline runs `kubectl apply` for a Pod, the Kubernetes API server intercepts the request and asks this webhook whether the Pod should be admitted. The webhook evaluates the Pod spec against a registry of security policies and returns an allow/deny decision. Denied Pods never exist, they're rejected at admission with a structured error message naming the failed policy.
 
 Six policies are enforced out of the box:
 
@@ -21,7 +20,7 @@ Six policies are enforced out of the box:
 | `resource-limits-required` | Containers missing CPU or memory limits |
 | `image-registry-allowlist` | Images from registries outside the configured allowlist |
 
-## Architecture
+# Architecture
 
 ```mermaid
 flowchart LR
@@ -37,7 +36,7 @@ flowchart LR
 
 The webhook serves HTTPS using a self-signed CA. The CA bundle is registered with `ValidatingWebhookConfiguration` so the API server trusts it. Enforcement is scoped via `namespaceSelector` to namespaces labeled `security-policy=enforce`, so cluster infrastructure (including the webhook itself) is not affected by the policy and cannot be locked out by misconfiguration.
 
-## Quickstart (local development)
+# Quickstart (local development)
 
 Prerequisites: Docker, kubectl, k3d, Python 3.11+, openssl.
 
@@ -67,32 +66,11 @@ kubectl create namespace policy-test
 kubectl label namespace policy-test security-policy=enforce
 ```
 
-## Demo
+# Demo
 
-Try to create a pod running as root:
+[![Demo video](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://youtu.be/fksCC_ic_Sc)
 
-```bash
-kubectl apply -n policy-test -f - <<MANIFEST
-apiVersion: v1
-kind: Pod
-metadata:
-  name: bad-pod
-spec:
-  securityContext:
-    runAsUser: 0
-  containers:
-    - name: app
-      image: nginx
-MANIFEST
-```
-
-Expected output:
-Error from server: admission webhook "validate.security-webhook.default.svc"
-denied the request: [no-root] Pod-level securityContext.runAsUser is 0 (root)
-
-The Pod never enters the cluster. The same manifest applied to the `default` namespace succeeds, demonstrating namespace scoping.
-
-## Development
+# Development
 
 Run unit tests with coverage:
 
@@ -105,11 +83,11 @@ pip install -r requirements.txt -r requirements-dev.txt
 pytest -v --cov=policies --cov-report=term-missing
 ```
 
-Tests cover all six policies and the orchestrator (~30 cases, ~99% line coverage).
+Tests cover all six policies and the orchestrator.
 
-The CI pipeline (GitHub Actions) runs tests and builds the Docker image on every push and pull request.
+The CI pipeline runs tests and builds the Docker image on every push and pull request.
 
-## Project structure
+# Project structure
 ```
 .
 ├── webhook/                        # Webhook service
