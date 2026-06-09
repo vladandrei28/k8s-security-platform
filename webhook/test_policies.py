@@ -1,4 +1,3 @@
-"""Unit tests for pod admission policies."""
 import pytest
 
 from policies import (
@@ -179,8 +178,6 @@ class TestEvaluatePolicies:
         assert evaluate_policies(safe_pod).allowed is True
 
     def test_first_failure_short_circuits(self, safe_pod):
-        # Violates BOTH no-root AND no-privileged. no-root runs first,
-        # should fire first and short-circuit.
         safe_pod["spec"]["securityContext"] = {"runAsUser": 0}
         safe_pod["spec"]["containers"][0]["securityContext"]["privileged"] = True
         result = evaluate_policies(safe_pod)
