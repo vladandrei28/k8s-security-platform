@@ -1,10 +1,3 @@
-"""
-Pod security policies enforced by the admission webhook.
-
-Each policy is a function that takes a pod object (from AdmissionReview.request.object)
-and returns a PolicyResult. The registry ACTIVE_POLICIES lists which run in order;
-the first denial short-circuits and is returned to the API server.
-"""
 from dataclasses import dataclass
 from typing import Callable, Optional
 
@@ -94,12 +87,12 @@ def check_image_registry(pod_object: dict) -> PolicyResult:
         name = container.get("name", "<unnamed>")
         image = container.get("image", "")
 
-        # Image with no slash, e.g. "nginx" — defaults to docker.io/library/, allowed
+        
         first_slash = image.find("/")
         if first_slash == -1:
             continue
 
-        # Has prefix — check if it looks like a registry (contains . or :)
+        
         registry_candidate = image[:first_slash]
         looks_like_registry = "." in registry_candidate or ":" in registry_candidate
 
@@ -110,12 +103,12 @@ def check_image_registry(pod_object: dict) -> PolicyResult:
                     f"Container '{name}' image '{image}' uses non-allowed registry "
                     f"(allowed: {', '.join(ALLOWED_REGISTRY_PREFIXES)})",
                 )
-        # else "library/nginx" style — defaults to docker.io, allowed
+        
 
     return PolicyResult(True)
 
 
-# --- Registry: order matters, first denial wins ---
+
 
 ACTIVE_POLICIES: list[tuple[str, PolicyFunc]] = [
     ("no-root", check_no_root),
